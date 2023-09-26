@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './screen/Home';
-import About from "./screen/about";
+import About from './screen/About';
 import Product from './screen/Product';
 import ProductDetail from './screen/ProductDetail';
 import Setting from './screen/Setting';
@@ -16,6 +16,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import AddProduct from './screen/AddProduct';
 import Books from './screen/Books';
 import AddBooks from './screen/AddBooks';
+import Quiz from './screen/Quiz';
 const Drawer = createDrawerNavigator();
 
 
@@ -69,6 +70,7 @@ export default function App() {
         <Drawer.Screen name="Books" component={Books} />
         <Drawer.Screen name="Add Books" component={AddBooks} />
         <Drawer.Screen name="Setting" component={Setting} />
+        <Drawer.Screen name="Quiz" component={Quiz} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
