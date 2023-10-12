@@ -4,7 +4,7 @@ import { StyleSheet, Text, View,Button } from 'react-native';
 export default function Home({navigation}) {
   return (
     <View>
-      <Text>Ini Home</Text>
+      <Text>Selamat pagi {global.activeuser}</Text>
       <Button
       title='Go to About Page'
       onPress={()=>navigation.navigate("About")}></Button>

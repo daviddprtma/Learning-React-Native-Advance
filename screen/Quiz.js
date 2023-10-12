@@ -2,10 +2,12 @@ import React,{Component} from "react";
 import {StyleSheet,View } from "react-native";
 import {LinearProgress,Button,Text,Chip } from "@rneui/base";
 import Question from "../classes/Question";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class Quiz extends Component{
     batas=10
-
+    topScore = 0;
+    topUser = "";
 
     toHHMMSS (v) {
             var sec_num = parseInt(v, 10); 
@@ -22,7 +24,7 @@ class Quiz extends Component{
         
         checkAnswer(s) {
             var temp2;
-            var temp4=false
+            var temp4=false;
             var temp3=this.state.skor;
             if (s == this.state.quiz[this.state.nomor].answer) {
                 temp3=this.state.skor + 100;
@@ -32,17 +34,23 @@ class Quiz extends Component{
                 }
             temp2=this.state.nomor+1;
             if(temp2>=this.state.quiz.length) 
-                {
-                    temp2=0;
-                    temp4=true
-                }
+            {
+                this.setState(
+                    this.state = {
+                        selesai: true,
+                        skor: temp3
+                    }
+                )
+                this.cekScore();
+            }
+            else{
             this.setState(
-            this.state = {
-                count:this.batas,
-                nomor:temp2,
-                skor:temp3,
-                selesai:temp4
-            })
+                this.state = {
+                    count:this.batas,
+                    nomor:temp2,
+                    skor:temp3,
+                })
+            }
         }
 
         restartGame(){
@@ -97,11 +105,38 @@ class Quiz extends Component{
             }, 1000) 
             
     }
+
+    cekScore = async() =>{
+        try{
+            const value = await AsyncStorage.getItem('topscore');
+            const vals = await AsyncStorage.getItem('topuser');
+            this.topScore = value;
+            this.topUser = vals;
+
+            if(parseInt(value) < this.state.skor){
+                try{
+                    await AsyncStorage.setItem('topscore', this.state.skor.toString());
+                    await AsyncStorage.setItem('topuser', global.activeuser);
+                    this.topScore = await AsyncStorage.getItem('topscore');
+                    this.topUser = await AsyncStorage.getItem('topuser');
+                }
+                catch(e){
+                    alert("Tes" + e);
+                }
+            }
+        }
+        catch(e){
+            alert(e);
+        }
+    }
+
     render(){
-        if(this.state.selesai==true)
+      if(this.state.selesai==true)
       {
         return <View style={styles.vparent}>
-            <Text h3>Your Score:</Text>
+            <Text h3>{global.activeuser} Your score: {this.state.skor} </Text>
+            <Text >High Score: {this.topScore}</Text>
+            <Text >User High Score: {this.topUser}</Text>
             <Chip
 			type="outline"
                 title={this.state.skor}
