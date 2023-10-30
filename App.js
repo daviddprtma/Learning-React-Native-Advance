@@ -19,6 +19,8 @@ import AddBooks from './screen/AddBooks';
 import Quiz from './screen/Quiz';
 import Login from './screen/Login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PopularMovie from './screen/PopularMovie';
+import PopularActor from './screen/PopularActor';
 const Drawer = createDrawerNavigator();
 
 
@@ -135,6 +137,8 @@ export default class App extends Component {
         <Drawer.Screen name="Add Books" component={AddBooks} />
         <Drawer.Screen name="Setting" component={Setting} />
         <Drawer.Screen name="Quiz" component={Quiz} />
+        <Drawer.Screen name='Popular Movie' component={PopularMovie}/>
+        <Drawer.Screen name='Popular Actor' component={PopularActor}/>
       </Drawer.Navigator>
     </NavigationContainer>
   );
