@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text } from "react-native-web";
 import React from "react";
 import { FlatList } from "react-native-gesture-handler";
-import { Button, Card, Icon } from "react-native-elements";
+import { Button, Card, Icon, Image } from "react-native-elements";
 
 class PopularActor extends React.Component {
     constructor(props) {
@@ -33,6 +33,10 @@ class PopularActor extends React.Component {
             keyExtractor={(item) => item.person_id.toString()}
             renderItem={({item}) => (
                 <Card>
+                    <Image
+                    source={{uri: item.url}}
+                    style={{width: 200, height: 200}}
+                    />
                 <Text style={{marginBottom: 10}}>{item.person_name}</Text>
                 </Card>
             )}
