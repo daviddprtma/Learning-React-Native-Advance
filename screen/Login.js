@@ -13,7 +13,21 @@ class Login extends Component {
     }
 
     doLogin = async (username,password) => {
-        if(password == "1234"){
+        const options = {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }),
+            body: "user_id="+username+"&user_password="+password
+        };
+
+        const response = await fetch(
+            'https://ubaya.me/react/160419103/login.php', options
+        );
+
+        const json = await response.json();
+
+        if(json.result=='success'){
             try{
                 await AsyncStorage.setItem("username",username);
                 alert("Login Sukses");

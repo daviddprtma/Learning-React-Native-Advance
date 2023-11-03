@@ -21,6 +21,7 @@ import Login from './screen/Login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PopularMovie from './screen/PopularMovie';
 import PopularActor from './screen/PopularActor';
+import DetailMovie from './screen/DetailMovie';
 const Drawer = createDrawerNavigator();
 
 
@@ -97,6 +98,15 @@ function CustomDrawerContent(props){
 }
 
 
+function NavMovie() {
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name='PopularMovie' component={PopularMovie} options={{headerShown: false}}/>
+      <Stack.Screen name='DetailMovie' component={DetailMovie}/>
+    </Stack.Navigator>
+  );
+}
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -114,8 +124,7 @@ export default class App extends Component {
       }
     })
   }
-
-    
+ 
   render(){
     if(!this.state.islogin)
     {
@@ -137,7 +146,7 @@ export default class App extends Component {
         <Drawer.Screen name="Add Books" component={AddBooks} />
         <Drawer.Screen name="Setting" component={Setting} />
         <Drawer.Screen name="Quiz" component={Quiz} />
-        <Drawer.Screen name='Popular Movie' component={PopularMovie}/>
+        <Drawer.Screen name='Popular Movie' component={NavMovie}/>
         <Drawer.Screen name='Popular Actor' component={PopularActor}/>
       </Drawer.Navigator>
     </NavigationContainer>

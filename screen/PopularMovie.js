@@ -1,20 +1,31 @@
 import { StyleSheet, View, Text } from "react-native-web";
 import React from "react";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, TextInput } from "react-native-gesture-handler";
 import { Button, Card, Icon } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
 
 class PopularMovie extends React.Component {
     constructor(props) {
         super();
         this.state = {
             tes: "Menunggu API",
+            temp: "",
+            cari: "",
             data: []
         };
         this.fetchData();
     }
     fetchData= () =>{
+        const options = {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded'
+
+            }),
+            body: "cari="+this.state.cari
+        };
         try{
-            fetch('https://ubaya.me/react/160419103/movie.php')
+            fetch('https://ubaya.me/react/160419103/movie.php', options)
             .then((response) => response.json())
             .then((resjson) => {
                 this.setState(
@@ -42,6 +53,10 @@ class PopularMovie extends React.Component {
                 icon={<Icon name='rowing' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
                 title='Detail'
+                onPress={()=> {
+                    const { navigation } = this.props;
+                    navigation.navigate('DetailMovie',{movie_id:item.movie_id})
+                }}
                 />
             </Card>
             )}
@@ -49,14 +64,40 @@ class PopularMovie extends React.Component {
     }
   render() {
     return (
+    <Card>
+        <View style={styles.viewRow}>
+            <Text>Cari </Text>
+            <TextInput style={styles.input}
+            onChangeText={(cari)=>this.setState({cari:cari})}
+            onSubmitEditing={this.fetchData}
+            />
+        </View>
       <View>
         <Text>{this.showData(this.state.data)}</Text>   
       </View>
+    </Card>
     );
   }
 }
 
-export default PopularMovie;
+export default function (props) { 
+    const navigation = useNavigation();
+    return <PopularMovie {...props} navigation={navigation}/>
+ }
 
-
+const styles = StyleSheet.create({
+    viewRow: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      paddingRight:50,
+      margin:3
+    },
+    input: {
+        height: 40,
+        width: 200,
+        borderWidth: 1,
+        padding: 10
+    }
+  });
   
