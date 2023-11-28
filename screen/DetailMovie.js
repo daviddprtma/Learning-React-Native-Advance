@@ -1,6 +1,8 @@
+import { useNavigation } from "@react-navigation/native";
 import React, {Component} from "react";
 import { FlatList, Text, View } from "react-native";
 import { Card } from "react-native-elements";
+import { Button } from "react-native-elements";
 
 class DetailMovie extends React.Component{
     constructor(){
@@ -69,6 +71,12 @@ class DetailMovie extends React.Component{
                         </View>
                     )}
                 />
+                <Button
+                    style={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+                    title='Edit'
+                    onPress={() => {this.props.navigation.navigate('EditMovie', {movie_id: this.state.movie_id})}
+                    }
+                />
             </Card>
             </View>
         )
@@ -76,4 +84,7 @@ class DetailMovie extends React.Component{
     }
 }
 
-export default DetailMovie;
+export default function(props){
+    const navigation = useNavigation();
+    return <DetailMovie {...props} navigation={navigation} />;
+}

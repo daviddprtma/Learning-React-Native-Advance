@@ -23,6 +23,8 @@ import PopularMovie from './screen/PopularMovie';
 import PopularActor from './screen/PopularActor';
 import DetailMovie from './screen/DetailMovie';
 import DetailPopularActor from './screen/DetailPopularActor';
+import NewPopMovie from './screen/NewPopMovie';
+import EditMovie from './screen/EditMovie';
 const Drawer = createDrawerNavigator();
 
 
@@ -104,6 +106,7 @@ function NavMovie() {
     <Stack.Navigator>
       <Stack.Screen name='PopularMovie' component={PopularMovie} options={{headerShown: false}}/>
       <Stack.Screen name='DetailMovie' component={DetailMovie}/>
+      <Stack.Screen name='EditMovie' component={EditMovie}/>
     </Stack.Navigator>
   );
 }
@@ -158,6 +161,7 @@ export default class App extends Component {
         <Drawer.Screen name="Quiz" component={Quiz} />
         <Drawer.Screen name='Popular Movie' component={NavMovie}/>
         <Drawer.Screen name='Popular Actor' component={NavActor}/>
+        <Drawer.Screen name='New Pop Movie' component={NewPopMovie}/>
       </Drawer.Navigator>
     </NavigationContainer>
   );
