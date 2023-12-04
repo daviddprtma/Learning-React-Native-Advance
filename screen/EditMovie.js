@@ -1,11 +1,16 @@
 import React, {Component} from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Touchable, Image, ScrollView, LogBox} from "react-native";
 import { Card } from "react-native-elements";
 import ValidationComponent from "react-native-form-validator";
 import { FlatList } from "react-native-gesture-handler";
 import { DatePickerModal } from 'react-native-paper-dates';
 import DropDownPicker from "react-native-dropdown-picker";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { TouchableOpacity } from "react-native-web";
+import * as ImagePicker from 'expo-image-picker';
+import {manipulateAsync, SaveFormat} from 'expo-image-manipulator';
 
+LogBox.ignoreLogs(['VirtualizedLists should never be nested']); // Ignore log notification by message
 export default class EditMovie extends ValidationComponent{
     constructor(props){
         super(props);
@@ -24,6 +29,7 @@ export default class EditMovie extends ValidationComponent{
             dd_value:'',
             dd_open:false,
             is_addgenre:false,
+            _imageUrl: "https://ubaya.me/blank.png"
         }
     }
 
@@ -89,6 +95,9 @@ this.hideDateTimePicker();
 };
 
 submitData = () => {
+    const data = new FormData();
+    data.append('movie_id',this.state.movie_id);
+    data.append('image',this.state._imageUrl);
     const options = {
         method: 'POST',
         headers: new Headers({
@@ -112,6 +121,27 @@ submitData = () => {
     }
     catch(e){
         console.log(e);
+    }
+
+    const options2 = {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/form-data'
+        }),
+        body: data
+    };
+    try{
+        fetch('https://ubaya.me/react/160419103/uploadposter.php/',options2)
+        .then((response) => response.json())
+        .then((resjson) => {{
+            console.log(resjson);
+            if(resjson.result==='sukses'){
+                alert(resjson.msg)
+            }
+        }});
+    }
+    catch(error){
+        console.log(error);
     }
 }
 
@@ -176,13 +206,13 @@ submitData = () => {
             } 
             }
 
-            deleteGenre(idgenre){
+            deleteGenre(genre_id){
                 const options = {
                  method: 'POST',
                  headers: new Headers({
                   'Content-Type': 'application/x-www-form-urlencoded'
                  }),
-                 body: "genre_id="+idgenre+"&"+
+                 body: "genre_id="+genre_id+"&"+
                     "movie_id="+this.state.movie_id
                 };
                  try {
@@ -201,7 +231,52 @@ submitData = () => {
                  } catch (error) {
                   console.log(error);
                  }
+            }
+
+            _imgGaleri = async () => {
+                let result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.All,
+                    allowsEditing: true,
+                    aspect: [4,3],
+                    quality: 1
+                });
+                console.log(result);
+
+                if(!result.cancelled){
+                    this._prosesFoto(result.uri);
+                    _imageUrl: result.uri
                 }
+            }
+
+            
+            _imgKamera = async () => {
+                let result = await ImagePicker.launchCameraAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    aspect: [4,3],
+                    quality: 1
+                });
+                console.log(result);
+
+                if(!result.cancelled){
+                        this._prosesFoto(result.uri);
+                        _imageUrl: result.uri
+                }
+            }
+
+            _prosesFoto = async (uri) => {
+                const manipResult = await manipulateAsync(
+                    uri,
+                    [
+                        {resize: {height: 480, width: 360}},
+                    ],
+                    {compress: 1, format: SaveFormat.JPEG, base64: true}
+                );
+                this.setState(state => ({
+                    _imageUrl: manipResult.uri,
+                    _image64: manipResult.base64
+                }))
+            }
     render(){
         if(this.state.is_addgenre) this.addGenre();
         if(!this.state.is_fetched){
@@ -211,7 +286,7 @@ submitData = () => {
         }
         return(
             <Card>
-            <View>
+            <ScrollView>
                 <Card.Title>Update Movie</Card.Title>
                 <Card.Divider></Card.Divider>
                 <Text>Title</Text>
@@ -253,6 +328,48 @@ submitData = () => {
                     <TextInput style={styles.input} ref="runtime" onChangeText={(runtime) => this.setState({runtime})} value={this.state.runtime}/>
                 </View>
                 <Card.Divider></Card.Divider>
+                <TouchableOpacity onPress={()=>this.RBSheet.open()}>
+                <Image
+                style={styles.imgPoster}
+                source={{uri:this.state._imageUrl}}
+                />
+                </TouchableOpacity>
+                <RBSheet
+                ref={ref=>{
+                    this.RBSheet = ref;
+                }}
+                height={100}
+                openDuration={250}
+                customStyles={{
+                    container: {
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }
+                }}
+                >
+                    <View style={styles.container}>
+                        <Button
+                        style={styles.input}
+                        onPress={this._imgKamera}
+                        icon={{
+                            name: "camera",
+                            size: 15,
+                            color: "white"
+                        }}
+                        title="Camera"
+                        />
+                        <Button
+                        style={styles.input}
+                        onPress={this._imgGaleri}
+                        icon={{
+                            name: "photo",
+                            size: 15,
+                            color: "white"
+                        }}
+                        title="Gallery"
+                        />
+                    </View>
+                </RBSheet>
                 <Button 
                 onPress={this._onPressButton}
                 title="Submit"
@@ -265,11 +382,11 @@ submitData = () => {
                     renderItem={({item}) => (
                         <View>
                             <Text>{item.genre_name}
+                            </Text>
                             <Button
                             onPress={() => this.deleteGenre(item.genre_id)}
                             title="X"
                             />
-                            </Text>
                         </View>
                     )}
                 />
@@ -286,7 +403,7 @@ submitData = () => {
                     setValue={this.setValue}
                 />
 
-            </View>
+            </ScrollView>
             </Card>
         )
     }
@@ -323,4 +440,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderStyle: "solid"
   },
+  imgPoster: {
+    width: '100%',
+    height: 400
+  }
 });

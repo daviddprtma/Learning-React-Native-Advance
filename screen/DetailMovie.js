@@ -50,7 +50,7 @@ class DetailMovie extends React.Component{
             <Card>
                 <Card.Title>{this.state.data.title}</Card.Title>
                 <Card.Divider/>
-                <Card.Image source={{uri: 'http://placekitten.com/200/150'}}>
+                <Card.Image source={{uri: 'https://ubaya.me/react/160419103/images/'+this.state.movie_id+'.jpg'}}>
                 </Card.Image>
                 <Text style={{marginBottom: 10}}>
                     {this.state.data.overview}
